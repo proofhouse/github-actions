@@ -1,0 +1,12 @@
+# Review routing for github-actions. GitHub applies the last matching
+# rule, so the rules below override the default for the paths they name.
+# Owners are org teams (sole member @tbhb for now) created with push
+# access, the minimum GitHub requires for a team to count as a code
+# owner.
+
+# Default owner for everything.
+*           @proofhouse/maintainers
+
+# CI and automation surface. The /.github/ rule covers renovate.json5
+# and every workflow.
+/.github/   @proofhouse/security
