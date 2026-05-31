@@ -112,19 +112,25 @@
       ],
     },
 
-    // .github/workflows/renovate-config-validator.yaml. Pins the
-    // Renovate engine image used by the validator. Matches the
-    // RENOVATE_IMAGE=... shell assignment.
+    // Workflow `run:` steps that pin a Docker image to a
+    // `<NAME>_IMAGE="reg/name:tag@sha256:..."` shell assignment, with the
+    // marker on the line above. Covers the Renovate engine image in
+    // renovate-config-validator.yaml and the actionlint image in
+    // lint-workflows.yml; the `\S+_IMAGE` variable name keeps one matcher
+    // serving every such pin.
     //
     //   # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
     //   RENOVATE_IMAGE="ghcr.io/renovatebot/renovate:43.205.0@sha256:..."
+    //
+    //   # renovate: datasource=docker depName=rhysd/actionlint
+    //   ACTIONLINT_IMAGE="docker.io/rhysd/actionlint:1.7.12@sha256:..."
     {
       customType: "regex",
       managerFilePatterns: [
         "/^\\.github/workflows/[^/]+\\.ya?ml$/",
       ],
       matchStrings: [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+RENOVATE_IMAGE=\"[^:]+:(?<currentValue>[^@]+)@(?<currentDigest>sha256:[a-f0-9]+)\"",
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+\\S+_IMAGE=\"[^:]+:(?<currentValue>[^@]+)@(?<currentDigest>sha256:[a-f0-9]+)\"",
       ],
     },
 
