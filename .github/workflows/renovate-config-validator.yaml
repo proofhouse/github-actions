@@ -4,6 +4,14 @@
 # on main can sit unnoticed until the next firing. Running the validator
 # from the same SHA-pinned image the actual Renovate workflow uses keeps
 # the two in lockstep.
+#
+# This workflow also exposes a `workflow_call` trigger so other org repos
+# can validate their Renovate config through it instead of each carrying
+# this setup. The job runs the pinned image directly against the tree
+# `actions/checkout` lays down — no local action or `just` recipe to drag
+# in. The `config_path` input points it at the file to validate and
+# defaults to `.github/renovate.json5`; a repo that keeps its config at the
+# root passes `config_path: renovate.json5`.
 name: Validate Renovate configuration
 
 on:
@@ -11,6 +19,12 @@ on:
     paths:
       # Catch nested renovate configs too if/when subprojects appear.
       - "**renovate.json5"
+  workflow_call:
+    inputs:
+      config_path:
+        type: string
+        description: "Path to the Renovate config to validate, relative to the repo root"
+        default: ".github/renovate.json5"
 
 permissions:
   contents: read
@@ -29,9 +43,12 @@ jobs:
           persist-credentials: false
 
       - name: Validate configuration
+        env:
+          CONFIG_PATH: ${{ inputs.config_path || '.github/renovate.json5' }}
         run: |
           # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
           RENOVATE_IMAGE="ghcr.io/renovatebot/renovate:43.205.0@sha256:90fa4f314be425066775a92402f183805134d9c8acd52bcfd120eb7dbe71dd41"
+          config_name="$(basename "${CONFIG_PATH}")"
           docker run --rm --entrypoint renovate-config-validator \
-            -v "${{ github.workspace }}/.github/renovate.json5:/renovate.json5" \
-            "${RENOVATE_IMAGE}" /renovate.json5
+            -v "${{ github.workspace }}/${CONFIG_PATH}:/${config_name}" \
+            "${RENOVATE_IMAGE}" "/${config_name}"

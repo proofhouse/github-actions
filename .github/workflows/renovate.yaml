@@ -4,9 +4,16 @@
 # stock Mend hosted App commits as renovate[bot], which can't match this
 # repo's gitAuthor + gitSignOff pair).
 #
+# This workflow also exposes a `workflow_call` trigger so other org repos
+# can run self-hosted Renovate through it instead of each carrying this
+# setup. A caller passes the App credentials as the `RENOVATE_CLIENT_ID`
+# and `RENOVATE_PRIVATE_KEY` secrets (or `secrets: inherit`); checkout and
+# the renovate action run against the caller's tree, so the job needs no
+# local action or `just` recipe to stay self-contained.
+#
 # End-to-end execution depends on the proofhouse-renovate App being
-# registered and RENOVATE_APP_ID / RENOVATE_PRIVATE_KEY secrets being set;
-# until then this workflow is wired but inert.
+# registered and the RENOVATE_CLIENT_ID / RENOVATE_PRIVATE_KEY secrets
+# being set; until then this workflow is wired but inert.
 name: Renovate
 
 on:
@@ -22,6 +29,17 @@ on:
         type: boolean
         description: "Run Renovate with debug log levels"
         default: true
+  workflow_call:
+    inputs:
+      renovate_log_level_debug:
+        type: boolean
+        description: "Run Renovate with debug log levels"
+        default: true
+    secrets:
+      RENOVATE_CLIENT_ID:
+        required: true
+      RENOVATE_PRIVATE_KEY:
+        required: true
 
 permissions:
   contents: read
@@ -57,7 +75,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@693b9ef15eec82123529a37c782242f091365961 # v46.1.14
         env:
-          LOG_LEVEL: ${{ github.event.inputs.renovate_log_level_debug == 'false' && 'INFO' || 'DEBUG' }}
+          LOG_LEVEL: ${{ (github.event_name == 'schedule' || inputs.renovate_log_level_debug) && 'DEBUG' || 'INFO' }}
         with:
           # renovate: datasource=github-releases depName=renovatebot/renovate
           renovate-version: 43.205.0
