@@ -6,4 +6,4 @@ Guidance for AI coding agents working in this repository. Read it alongside the 
 
 Write [Conventional Commits](https://www.conventionalcommits.org/) (`type(scope): subject`) with a DCO `Signed-off-by` trailer, and keep the subject under 80 characters.
 
-This repository doesn't yet run commit-message linting (vale prose checks, cspell, the Conventional Commits shape, and trailer order). That tooling comes from the shared `pre-commit-hooks` repository. Until it lands, follow the Conventional Commits shape and add the sign-off.
+The `commit-msg` stage runs four hooks from the shared [`pre-commit-hooks`](https://github.com/proofhouse/pre-commit-hooks) repository: `commitlint` (the Conventional Commits shape and length bounds), `commit-trailers` (the AI-assistant trailer rules), `vale-commit-msg` (prose), and `cspell-commit-msg` (spelling). Run `just prek-install` once so the hooks fire on every commit.

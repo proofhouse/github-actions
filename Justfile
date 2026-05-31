@@ -94,6 +94,11 @@ lint-config *args:
 lint-yaml *args:
     yamllint --strict {{ if args == "" { "." } else { args } }}
 
+# Preview the four commit-msg gates against the COMMIT_AGENTMSG draft.
+# prek needs .pre-commit-config.yaml staged to run.
+lint-commit-msg:
+    prek run --stage commit-msg --commit-msg-filename COMMIT_AGENTMSG
+
 # --- Security ---
 
 # Scan the working tree and git history for committed secrets via gitleaks.
@@ -122,9 +127,9 @@ prek:
 prek-all:
     prek run --all-files
 
-# Install the project's pre-commit hooks (pre-commit, pre-push).
+# Install the project's git hooks (commit-msg, pre-commit, pre-push).
 prek-install:
-    prek install -t pre-commit -t pre-push
+    prek install -t commit-msg -t pre-commit -t pre-push
 
 # Generate CHANGELOG.md from Conventional Commit history.
 generate-changelog:
