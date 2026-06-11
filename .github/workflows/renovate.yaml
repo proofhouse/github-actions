@@ -78,6 +78,6 @@ jobs:
           LOG_LEVEL: ${{ (github.event_name == 'schedule' || inputs.renovate_log_level_debug) && 'DEBUG' || 'INFO' }}
         with:
           # renovate: datasource=github-releases depName=renovatebot/renovate
-          renovate-version: 43.205.0
+          renovate-version: 43.214.2
           configurationFile: .github/renovate.json5
           token: ${{ steps.get_token.outputs.token }}
