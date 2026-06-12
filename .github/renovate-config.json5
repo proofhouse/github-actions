@@ -1,0 +1,125 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
+  // Shared repository-level Renovate policy for the proofhouse org. Every
+  // repo extends this through its own `.github/renovate.json5`:
+  //
+  //   extends: ["github>proofhouse/github-actions//.github/renovate-config.json5"]
+  //
+  // Renovate resolves `extends` at repository scope, so only repo-level
+  // options belong here. Global-only options (identity, limits,
+  // requireConfig) live in the companion `renovate-global-config.json5`,
+  // referenced through `globalExtends`. The `.json5` suffix in the
+  // reference is required: Renovate's preset resolver only keeps a custom
+  // filename verbatim when it already ends in `.json`/`.json5`/`.jsonc`,
+  // otherwise it appends `.json` and the lookup misses.
+  //
+  // `packageRules` and `customManagers` are both mergeable arrays, so a
+  // consuming repo can append its own rules and managers (Go module
+  // grouping, repo-specific `# renovate:` markers) without losing what
+  // this preset defines.
+
+  extends: [
+    "config:recommended",
+    // DCO sign-off on every commit Renovate creates. Pairs with
+    // `gitAuthor` (in the global preset) so the trailer matches the
+    // committer identity.
+    ":gitSignOff",
+    // Default GitHub Actions to pin-by-digest with a human-readable tag
+    // comment — same discipline AGENTS.md mandates for every `uses:`.
+    "helpers:pinGitHubActionDigests",
+    // Enable Renovate's built-in pre-commit manager (off by default) so it
+    // tracks the hook `rev:` pins in `.pre-commit-config.yaml`, the same
+    // way the built-in managers track the GitHub Actions pins.
+    ":enablePreCommit",
+  ],
+
+  // Open and update PRs on Sundays only. Keeps weekday review queues
+  // focused on human-authored work; pairs with the weekday cron in each
+  // repo's renovate.yaml which still runs for vulnerability alerts (those
+  // bypass the schedule).
+  schedule: ["on sunday"],
+
+  // Surface known CVEs in the dependency tree as PRs immediately, no
+  // cooldown and no schedule gate.
+  vulnerabilityAlerts: {
+    enabled: true,
+    minimumReleaseAge: null,
+  },
+
+  packageRules: [
+    // Cooldown window — skip versions younger than 5 days. Most
+    // supply-chain attacks get noticed and yanked inside that window.
+    // Vulnerability-driven updates bypass via vulnerabilityAlerts above.
+    {
+      matchUpdateTypes: ["major", "minor", "patch"],
+      minimumReleaseAge: "5 days",
+    },
+
+    // One review surface for every GitHub Actions pin refresh.
+    {
+      groupName: "github-actions",
+      matchManagers: ["github-actions"],
+    },
+
+    // One review surface for every pre-commit hook `rev:` bump.
+    {
+      groupName: "pre-commit-hooks",
+      matchManagers: ["pre-commit"],
+    },
+
+    // One review surface for every Vale style package bump in `.vale.ini`.
+    // Grouped by file rather than manager: the custom regex manager below
+    // shares the `regex` manager name with the others, so `matchFileNames`
+    // is what isolates these updates.
+    {
+      groupName: "vale-styles",
+      matchFileNames: [".vale.ini"],
+    },
+  ],
+
+  // Renovate has built-in managers for GitHub Actions and Dockerfile FROM
+  // lines — those don't need customManagers. The two markers below appear
+  // in every proofhouse repo, so they live in the shared preset; managers
+  // for repo-specific files (composite-action defaults, workflow image
+  // pins, Go module groupings) stay inline in the repo that needs them.
+  customManagers: [
+    // Justfile docker-image pins. Each marker pairs a tag-form version
+    // with a tag@sha256:digest image string on the immediately following
+    // two lines. Renovate updates both atomically (the tag appears on both
+    // lines and autoReplaceGlobalMatch defaults to true). The matchStrings
+    // pattern matches each marker block independently, so one entry covers
+    // every such pin in the file.
+    //
+    //   # renovate: datasource=docker depName=rhysd/actionlint
+    //   actionlint_version := "1.7.12"
+    //   actionlint_image := "docker.io/rhysd/actionlint:1.7.12@sha256:..."
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^Justfile$/"],
+      matchStrings: [
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+\\S+_version := \"(?<currentValue>.*?)\"\\s+\\S+_image := \".*?@(?<currentDigest>sha256:[a-f0-9]+)\"",
+      ],
+    },
+
+    // .vale.ini `Packages` block. Each entry is a GitHub release-asset URL
+    // whose path already carries owner/repo and the version tag, so the
+    // marker the other managers rely on is unnecessary — and Vale's
+    // backslash-continued list has nowhere to put an inline `# renovate:`
+    // comment anyway. depName and currentValue come straight out of the URL.
+    //
+    //   https://github.com/errata-ai/Google/releases/download/v0.6.3/Google.zip, \
+    //
+    // tbhb/vale-ai-tells contributes three assets pinned to one tag; they
+    // share an identical matched substring, so autoReplaceGlobalMatch
+    // (default true) rewrites all three in a single update.
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.vale\\.ini$/"],
+      matchStrings: [
+        "https://github\\.com/(?<depName>[^/]+/[^/]+)/releases/download/(?<currentValue>v[^/]+)/",
+      ],
+      datasourceTemplate: "github-releases",
+    },
+  ],
+}

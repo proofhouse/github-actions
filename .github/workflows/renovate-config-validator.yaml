@@ -19,6 +19,11 @@ on:
     paths:
       # Catch nested renovate configs too if/when subprojects appear.
       - "**renovate.json5"
+      # Shared preset files consumed by every proofhouse repo through
+      # extends / globalExtends. They don't end in `renovate.json5`, so
+      # they need their own patterns.
+      - "**renovate-config.json5"
+      - "**renovate-global-config.json5"
   workflow_call:
     inputs:
       config_path:
@@ -48,7 +53,14 @@ jobs:
         run: |
           # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
           RENOVATE_IMAGE="ghcr.io/renovatebot/renovate:43.205.0@sha256:90fa4f314be425066775a92402f183805134d9c8acd52bcfd120eb7dbe71dd41"
-          config_name="$(basename "${CONFIG_PATH}")"
+          # Validate the repo config plus any shared preset files present.
+          # The presets live only in this repo; workflow_call callers pass
+          # their own config_path and carry no presets, so the loop adds
+          # nothing there and the original single-file behavior is kept.
+          configs=("${CONFIG_PATH}")
+          for preset in .github/renovate-config.json5 .github/renovate-global-config.json5; do
+            [ -f "${preset}" ] && configs+=("${preset}")
+          done
           docker run --rm --entrypoint renovate-config-validator \
-            -v "${{ github.workspace }}/${CONFIG_PATH}:/${config_name}" \
-            "${RENOVATE_IMAGE}" "/${config_name}"
+            -v "${{ github.workspace }}:/repo" -w /repo \
+            "${RENOVATE_IMAGE}" "${configs[@]}"
