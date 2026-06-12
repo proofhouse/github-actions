@@ -298,3 +298,4 @@ pushd
 popd
 sumfile
 linuxbrew
+tmpl
