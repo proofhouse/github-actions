@@ -27,6 +27,23 @@
   // option that can't move to the shared preset — it differs per repo.
   repositories: ["proofhouse/github-actions"],
 
+  packageRules: [
+    // The Renovate engine is pinned twice: the release tag the renovate.yaml
+    // workflow passes as `renovate-version`, and the validator's Docker image
+    // in renovate-config-validator.yaml. Separate PRs let the two skew, and
+    // the validator should always run the same engine version the cron
+    // workflow does, so group them into one PR. Repo-level rules append
+    // after the shared preset's, and later rules win, so this grouping
+    // takes these two dependencies out of the generic github-actions group.
+    {
+      groupName: "renovate",
+      matchDepNames: [
+        "renovatebot/renovate",
+        "ghcr.io/renovatebot/renovate",
+      ],
+    },
+  ],
+
   customManagers: [
     // .github/actions/setup-just/action.yml. The `just-version` input
     // default carries the marker inline, after the value, so the regex
