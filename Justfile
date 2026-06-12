@@ -24,6 +24,12 @@ container_runtime := env("CONTAINER_RUNTIME", `bash -c '
     echo docker
 '`)
 
+# Shared docker-run prefix. DOCKER_CONFIG points at a fresh empty dir so
+# docker skips the osxkeychain helper; PATH prepends the runtime's dir
+# for shells where docker isn't already on PATH.
+
+docker_run := 'DOCKER_CONFIG="$(mktemp -d)" PATH="$(dirname ' + container_runtime + '):$PATH" ' + container_runtime + ' run --rm'
+
 # renovate: datasource=docker depName=rhysd/actionlint
 
 actionlint_version := "1.7.12"
@@ -31,7 +37,13 @@ actionlint_image := "docker.io/rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f
 
 # actionlint via its SHA-pinned Docker image (bundles shellcheck), tree mounted read-only.
 
-actionlint := 'DOCKER_CONFIG="$(mktemp -d)" PATH="$(dirname ' + container_runtime + '):$PATH" ' + container_runtime + ' run --rm -v "$(pwd):/repo:ro" -w /repo ' + actionlint_image
+actionlint := docker_run + ' -v "$(pwd):/repo:ro" -w /repo ' + actionlint_image
+
+# renovate: datasource=docker depName=ghcr.io/gitleaks/gitleaks
+
+gitleaks_version := "v8.28.0"
+gitleaks_image := "ghcr.io/gitleaks/gitleaks:v8.28.0@sha256:cdbb7c955abce02001a9f6c9f602fb195b7fadc1e812065883f695d1eeaba854"
+gitleaks_scan := docker_run + ' -v "$(pwd):/repo" -w /repo ' + gitleaks_image
 
 # Default recipe.
 default: lint
@@ -101,9 +113,9 @@ lint-commit-msg:
 
 # --- Security ---
 
-# Scan the working tree and git history for committed secrets via gitleaks.
+# Scan the working tree and full history for secrets via the pinned gitleaks image.
 gitleaks:
-    gitleaks git --verbose .
+    {{ gitleaks_scan }} git --verbose .
 
 # --- Aggregators ---
 
