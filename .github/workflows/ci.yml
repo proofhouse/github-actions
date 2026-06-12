@@ -1,0 +1,56 @@
+---
+# Main quality gate. This repo's content is workflows, composite actions,
+# and the docs around them, so the prose, spelling, Markdown, config, and
+# YAML linters are its code gates and run here rather than staying
+# local-only as in the Go siblings. The lint job installs the Brewfile
+# toolchain (Homebrew is preinstalled on the ubuntu-24.04 runners) and
+# syncs the Vale styles, then runs each gate through its `just` recipe so
+# the Justfile stays the single definition of what each gate runs.
+# actionlint is absent from the list: the standalone lint-workflows
+# workflow already covers it.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Set up just
+        uses: proofhouse/github-actions/.github/actions/setup-just@c55eeb3115d95f6b8777538b4d6f49d48830e199 # v0.2.0
+
+      - name: Install Homebrew dependencies
+        run: brew bundle install
+
+      - name: Sync Vale styles
+        run: just install-tools
+
+      - name: Lint
+        run: |
+          just lint-prose
+          just lint-spelling
+          just lint-markdown
+          just lint-config
+          just lint-yaml
