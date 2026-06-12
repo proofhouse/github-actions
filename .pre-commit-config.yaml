@@ -38,6 +38,8 @@ repos:
       # content from proofhouse/agent-tools, pinned by the apm.lock.yaml
       # hashes, so this repo never edits it to satisfy vale.
       - id: vale
+        # Template from the proofhouse package; one machine-parseable line per finding.
+        args: [--output=proofhouse-agent.tmpl]
         types_or: [markdown]
         exclude: ^(CHANGELOG\.md$|\.claude/rules/worktree-wip\.md$|\.claude/skills/)
 

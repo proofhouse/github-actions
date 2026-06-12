@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository. Read it alongside the 
 
 ## Prose linting
 
-When vale reports findings, rerun it as `vale --output=proofhouse-agent.tmpl <files>`. The template, which `just vale-sync` pulls in with the rest of the [`proofhouse`](https://github.com/proofhouse/vale-proofhouse) package, prints one self-contained line per finding (location, severity, rule, the exact matched text, and the replacement when the rule carries one) plus a totals line, so you can fix every finding without follow-up searching.
+`just lint-prose` and the vale pre-commit hook already emit the agent output template, which `just vale-sync` pulls in with the rest of the [`proofhouse`](https://github.com/proofhouse/vale-proofhouse) package. It prints one self-contained line per finding (location, severity, rule, the exact matched text, and the replacement when the rule carries one) plus a totals line, so you can fix every finding without follow-up searching. Pass `--output=proofhouse-agent.tmpl` yourself only when you invoke vale directly.
 
 ## Commit messages
 

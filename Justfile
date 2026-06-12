@@ -91,7 +91,7 @@ lint-workflows:
 # proofhouse/agent-tools; that prose is upstream and pinned by the
 # apm.lock.yaml hashes, so this repo never edits it to satisfy vale.
 lint-prose *args:
-    vale --glob='!{LICENSE,CHANGELOG.md,.vale/*,tmp/*,.claude/worktrees/*,COMMIT_AGENTMSG,apm_modules/*,.claude/rules/worktree-wip.md,.claude/skills/*}' {{ if args == "" { "." } else { args } }}
+    vale --output=proofhouse-agent.tmpl --glob='!{LICENSE,CHANGELOG.md,.vale/*,tmp/*,.claude/worktrees/*,COMMIT_AGENTMSG,apm_modules/*,.claude/rules/worktree-wip.md,.claude/skills/*}' {{ if args == "" { "." } else { args } }}
 
 # Check spelling against the project dictionary (.cspell-words.txt).
 lint-spelling *args:
