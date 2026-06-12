@@ -52,7 +52,7 @@ jobs:
           CONFIG_PATH: ${{ inputs.config_path || '.github/renovate.json5' }}
         run: |
           # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
-          RENOVATE_IMAGE="ghcr.io/renovatebot/renovate:43.205.0@sha256:90fa4f314be425066775a92402f183805134d9c8acd52bcfd120eb7dbe71dd41"
+          RENOVATE_IMAGE="ghcr.io/renovatebot/renovate:43.214.2@sha256:94ea97399b0dfba2e42b9571fc5bca6e1fbf5e72ecf6062cfe6aba5bec76b19e"
           # Validate the repo config plus any shared preset files present.
           # The presets live only in this repo; workflow_call callers pass
           # their own config_path and carry no presets, so the loop adds
