@@ -72,10 +72,20 @@ jobs:
         with:
           persist-credentials: false
 
+      # GITHUB_COM_TOKEN authenticates Renovate's reads of github.com:
+      # preset lookups against the public proofhouse/github-actions repo
+      # and changelog fetches. Without it those reads are anonymous and
+      # share the 60/hr per-IP limit, which intermittently fails preset
+      # resolution with config-presets-invalid. The minted installation
+      # token is a valid github.com credential, so Renovate turns it into
+      # a github.com host rule and the reads get the 5000/hr authenticated
+      # limit. The action forwards GITHUB_COM_TOKEN by default (it is in
+      # its env-regex allowlist alongside LOG_LEVEL).
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@693b9ef15eec82123529a37c782242f091365961 # v46.1.14
         env:
           LOG_LEVEL: ${{ (github.event_name == 'schedule' || inputs.renovate_log_level_debug) && 'DEBUG' || 'INFO' }}
+          GITHUB_COM_TOKEN: ${{ steps.get_token.outputs.token }}
         with:
           # renovate: datasource=github-releases depName=renovatebot/renovate
           renovate-version: 43.214.2
