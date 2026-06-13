@@ -33,10 +33,13 @@ repos:
       # grows a new section. Exclude the cog-generated CHANGELOG.md: the
       # [*.md] section's explicit rule activations still fire on it even
       # though the [{CHANGELOG.md,...}] section clears BasedOnStyles, so
-      # skip it here the way `just lint-prose` already does.
+      # skip it here the way `just lint-prose` already does. The APM
+      # excludes mirror `just lint-prose` too: `apm install` deploys that
+      # content from proofhouse/agent-tools, pinned by the apm.lock.yaml
+      # hashes, so this repo never edits it to satisfy vale.
       - id: vale
         types_or: [markdown]
-        exclude: ^CHANGELOG\.md$
+        exclude: ^(CHANGELOG\.md$|\.claude/rules/worktree-wip\.md$|\.claude/skills/)
 
   - repo: https://github.com/rvben/rumdl-pre-commit
     rev: 6a851ca55fe258291f7e2a70da0279f0f98dc636  # frozen: v0.2.9

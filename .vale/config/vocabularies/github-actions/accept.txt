@@ -226,3 +226,9 @@ CLIs
 devs
 CodeQL
 autobuild
+org's
+APM|apm
+apm_modules
+[Yy]amllint
+[Ll]ockfiles?
+[Gg]itignored?
