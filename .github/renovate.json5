@@ -1,30 +1,52 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
-  // This repo's Renovate config is mostly shared org policy, pulled in from
-  // the two presets that live alongside it:
+  // This repo's Renovate config pulls the shared org policy in from the
+  // preset that lives alongside it: renovate-config.json5 via extends — the
+  // repository-level rules plus the Justfile and Vale custom managers shared
+  // by every repo. `extends` is resolved at repository scope, after platform
+  // initialization, so the preset fetch is authenticated.
   //
-  //   - renovate-global-config.json5 via globalExtends — the global-only
-  //     identity, rate limits, and requireConfig (resolved at global-config
-  //     time, the only scope where those options take effect).
-  //   - renovate-config.json5 via extends — the repository-level rules plus
-  //     the Justfile and Vale custom managers shared by every repo.
+  // The global-only options (identity, rate limits, requireConfig) are
+  // inlined below rather than shared through globalExtends: Renovate
+  // resolves globalExtends presets while parsing the global config, before
+  // any host rules or platform credentials are registered, so that fetch is
+  // always anonymous and intermittently trips GitHub's per-IP anonymous
+  // rate limit on shared runners, failing the run with
+  // config-presets-invalid.
   //
-  // Only what's specific to this repo stays inline: its repository scope and
-  // the custom managers for files unique to it. `customManagers` is a
-  // mergeable array, so these append to the preset's managers rather than
-  // replacing them.
-  globalExtends: [
-    "github>proofhouse/github-actions//.github/renovate-global-config.json5",
-  ],
+  // Everything else specific to this repo also stays inline: its repository
+  // scope and the custom managers for files unique to it. `customManagers`
+  // is a mergeable array, so these append to the preset's managers rather
+  // than replacing them.
   extends: [
     "github>proofhouse/github-actions//.github/renovate-config.json5",
   ],
 
+  // Self-hosted Renovate reads this file as its global config first and then
+  // again as the per-repo config; without `requireConfig: "ignored"` that
+  // double-read is logged as a warning every run.
+  requireConfig: "ignored",
+
+  // Authenticated identity. `username` is what GitHub recognizes as the
+  // App's bot login; `gitAuthor` is what shows up in `git log` and in the
+  // DCO `Signed-off-by:` trailer. The numeric prefix on the gitAuthor email
+  // is the proofhouse-renovate bot account's own user id (distinct from the
+  // App id); gitSignOff (set in the repo-level preset) needs a valid noreply
+  // address here to construct the Signed-off-by line.
+  username: "proofhouse-renovate[bot]",
+  gitAuthor: "proofhouse-renovate[bot] <289255489+proofhouse-renovate[bot]@users.noreply.github.com>",
+
+  // Renovate's default rate limits assume a hosted SaaS context. For a
+  // self-hosted run on a cron we want every actionable PR opened on each
+  // pass; zero means unlimited.
+  prConcurrentLimit: 0,
+  prHourlyLimit: 0,
+
   // Single-repo scope. Self-hosted Renovate iterates over this list and
   // bails out on anything not present, so a misconfigured install can't
-  // accidentally open PRs on other repositories. This is the one global-only
-  // option that can't move to the shared preset — it differs per repo.
+  // accidentally open PRs on other repositories. Unlike the identity and
+  // rate-limit options above, this one differs per repo.
   repositories: ["proofhouse/github-actions"],
 
   packageRules: [
