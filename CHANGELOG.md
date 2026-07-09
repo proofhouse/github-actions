@@ -13,6 +13,15 @@
 
 - - -
 
+## [v0.2.2](https://github.com/proofhouse/github-actions/compare/b791f01710e652029365fa5c8ac3dacb518b3ca7..v0.2.2) - 2026-07-09
+
+### Continuous Integration
+
+- (**renovate**) inline global options to drop the anonymous preset fetch (#24) - ([9475ff5](https://github.com/proofhouse/github-actions/commit/9475ff5f832e9d9de656e5dce0eb42e6094a2311)) - [@tbhb](https://github.com/tbhb), [@tbhb](https://github.com/tbhb)
+- advance the setup-just pins to v0.2.1 (#21) - ([b791f01](https://github.com/proofhouse/github-actions/commit/b791f01710e652029365fa5c8ac3dacb518b3ca7)) - [@tbhb](https://github.com/tbhb)
+
+- - -
+
 ## [v0.2.1](https://github.com/proofhouse/github-actions/compare/a5ae7edc3fe86aa60b77268433aec7fdfa8facfb..v0.2.1) - 2026-06-13
 
 ### Bug Fixes
