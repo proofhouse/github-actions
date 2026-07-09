@@ -8,11 +8,12 @@
   //
   // Renovate resolves `extends` at repository scope, so only repo-level
   // options belong here. Global-only options (identity, limits,
-  // requireConfig) live in the companion `renovate-global-config.json5`,
-  // referenced through `globalExtends`. The `.json5` suffix in the
-  // reference is required: Renovate's preset resolver only keeps a custom
-  // filename verbatim when it already ends in `.json`/`.json5`/`.jsonc`,
-  // otherwise it appends `.json` and the lookup misses.
+  // requireConfig) are inlined directly into each repo's
+  // `.github/renovate.json5` to avoid an anonymous preset fetch before
+  // auth. The `.json5` suffix in the extends reference above is required:
+  // Renovate's preset resolver only keeps a custom filename verbatim when
+  // it already ends in `.json`/`.json5`/`.jsonc`, otherwise it appends
+  // `.json` and the lookup misses.
   //
   // `packageRules` and `customManagers` are both mergeable arrays, so a
   // consuming repo can append its own rules and managers (Go module
