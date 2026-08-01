@@ -55,6 +55,14 @@ jobs:
       - name: Set up vale
         uses: ./.github/actions/setup-vale
 
+      # tombi is pinned for the same reason vale is, with one wrinkle:
+      # upstream publishes no checksums, so the composite verifies
+      # against a digest recorded in the action itself. A version bump
+      # that leaves the digest stale fails loudly rather than installing
+      # something unverified.
+      - name: Set up tombi
+        uses: ./.github/actions/setup-tombi
+
       # The image pins an older Homebrew and sets HOMEBREW_NO_AUTO_UPDATE,
       # but `brew bundle` reads formula metadata from the JSON API, which
       # serves current definitions. ca-certificates now declares a `run`
@@ -76,3 +84,4 @@ jobs:
           just lint-markdown
           just lint-config
           just lint-yaml
+          just lint-toml

@@ -38,6 +38,15 @@ docker_run := 'DOCKER_CONFIG="$(mktemp -d)" PATH="$(dirname ' + container_runtim
 
 vale_version := "3.17.0"
 
+# The tombi release this repo's config and committed formatting are
+# verified against. tombi is brew-installed, so `check-tombi-version`
+# compares the local binary with it: a mismatch means local formatting
+# may differ from what the gate expects.
+
+# renovate: datasource=github-releases depName=tombi-toml/tombi
+
+tombi_version := "1.2.5"
+
 # renovate: datasource=docker depName=rhysd/actionlint
 
 actionlint_version := "1.7.12"
@@ -94,6 +103,12 @@ format-markdown *args:
 format-config *args:
     biome format --write {{ if args == "" { "." } else { args } }}
 
+# In-place TOML formatter (tombi 1.2.0) — the fixer paired with `lint-toml`'s --check
+# gate. Rewrites whitespace/style only; key and array order are preserved (schema-driven
+# reordering is disabled in tombi.toml). Excludes and lockfile skips come from tombi.toml.
+format-toml:
+    tombi format
+
 # --- Fix ---
 
 # Apply rumdl's auto-fixable Markdown rules.
@@ -103,7 +118,7 @@ fix-markdown *args:
 # --- Lint ---
 
 # Run every linter over the source tree.
-lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml
+lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml lint-toml
 
 # Lint GitHub Actions workflows via actionlint (SHA-pinned Docker image).
 lint-workflows:
@@ -131,6 +146,36 @@ lint-config *args:
 # Lint YAML via yamllint (--strict; config in .yamllint.yaml).
 lint-yaml *args:
     yamllint --strict {{ if args == "" { "." } else { args } }}
+
+# tombi is the org TOML gate (tombi 1.2.0): it lint-checks every tracked *.toml.
+# Cargo.toml/pyproject.toml validate offline against embedded SchemaStore schemas;
+# cog.toml, .rumdl.toml, REUSE.toml, deny.toml et al. get syntax + style checks. We run
+# the format gate in --check --diff mode here as well, so an unformatted TOML file fails
+# `just lint` without being rewritten (`just format-toml` is the in-place fixer).
+# --offline keeps CI hermetic against SchemaStore; --error-on-warnings promotes warnings
+# to hard failures (matching the org -D-warnings / --max-warnings=0 posture). Scope
+# (include/exclude, lockfile skips, schema.strict=false) lives in tombi.toml, so this
+# recipe passes NO path args — tombi walks the tree per that config. This deliberately
+# departs from the sibling `*args`-default-`.` idiom because tombi centralizes scoping in
+# tombi.toml rather than on the CLI, keeping excludes in one place.
+lint-toml:
+    tombi format --check --diff
+    tombi lint --offline --error-on-warnings
+
+# Warn when the locally installed tombi differs from the verified
+# release. Advisory rather than fatal: tombi comes from Homebrew and
+# moves on its own schedule, and that is fine so long as it stays
+# visible rather than silently reformatting a file the gate then
+# rejects.
+[script]
+check-tombi-version:
+    local=$(tombi --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    if [[ "${local}" != "{{ tombi_version }}" ]]; then
+        echo "warning: local tombi ${local} != verified {{ tombi_version }}" >&2
+        echo "         formatting may differ from what the gate expects" >&2
+    else
+        echo "tombi ${local} matches the verified release"
+    fi
 
 # Preview the four commit-msg gates against the COMMIT_AGENTMSG draft.
 # prek needs .pre-commit-config.yaml staged to run.
