@@ -1,3 +1,6 @@
 {
-  "Exclude": ["^\\.vale/(Google|write-good|proselint|ai-tells.*)/"]
+  "Exclude": [
+    "^\\.vale/(Google|write-good|proselint|ai-tells.*)/",
+    "^CHANGELOG\\.md$"
+  ]
 }

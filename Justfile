@@ -201,17 +201,19 @@ lint-just:
     just --fmt --check --unstable
 
 # Enforce .editorconfig (charset, line endings, final newline, trailing
-# whitespace, indentation) across the tree. Given no path arguments the
-# checker reads the git index, so Vale's synced styles and apm_modules
-# fall out of scope by virtue of being gitignored; the Exclude list in
-# .editorconfig-checker.json restates the Vale scope anyway, because
-# excludes still apply when paths are passed explicitly.
+# whitespace, indentation) across the tree. Takes no arguments on
+# purpose: with no paths the checker walks the git index, so scope lives
+# entirely in .editorconfig-checker.json — Vale's synced styles and
+# apm_modules fall out by virtue of being gitignored, and the Exclude
+# list names the Vale styles plus CHANGELOG.md, which `cog changelog`
+# regenerates wholesale (dropping the final newline) and which the vale
+# hook and the prose recipes already skip for the same reason.
 #
 # Spelled out rather than `ec`: upstream's release tarballs ship the
 # short name, but the Homebrew formula installs only the long one, and
 # the Brewfile is how both CI and a dev machine get this tool.
-lint-editorconfig *args:
-    editorconfig-checker {{ args }}
+lint-editorconfig:
+    editorconfig-checker
 
 # Preview the four commit-msg gates against the COMMIT_AGENTMSG draft.
 # prek needs .pre-commit-config.yaml staged to run.
