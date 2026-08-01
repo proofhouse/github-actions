@@ -6,6 +6,13 @@ set positional-arguments
 set script-interpreter := ['bash', '-eu']
 
 # Locate a Docker-compatible runtime; override with CONTAINER_RUNTIME.
+#
+# The continuation lines of the `for` list below hang under the first
+# candidate path rather than on a two-space grid, which is what shell
+# style calls for and what `lint-editorconfig` would otherwise reject
+# under this file's indent_size = 2. Exempt just that span rather than
+# re-indent a block that reads correctly as it stands.
+# editorconfig-checker-disable
 
 container_runtime := env("CONTAINER_RUNTIME", `bash -c '
     docker_path=$(command -v docker 2>/dev/null || true)
@@ -23,6 +30,8 @@ container_runtime := env("CONTAINER_RUNTIME", `bash -c '
     done
     echo docker
 '`)
+
+# editorconfig-checker-enable
 
 # Shared docker-run prefix. DOCKER_CONFIG points at a fresh empty dir so
 # docker skips the osxkeychain helper; PATH prepends the runtime's dir
@@ -126,7 +135,7 @@ fix-markdown *args:
 # --- Lint ---
 
 # Run every linter over the source tree.
-lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml lint-toml lint-just
+lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml lint-toml lint-just lint-editorconfig
 
 # Lint GitHub Actions workflows via actionlint (SHA-pinned Docker image).
 lint-workflows:
@@ -190,6 +199,19 @@ check-tombi-version:
 # format-just` is the in-place fixer.
 lint-just:
     just --fmt --check --unstable
+
+# Enforce .editorconfig (charset, line endings, final newline, trailing
+# whitespace, indentation) across the tree. Given no path arguments the
+# checker reads the git index, so Vale's synced styles and apm_modules
+# fall out of scope by virtue of being gitignored; the Exclude list in
+# .editorconfig-checker.json restates the Vale scope anyway, because
+# excludes still apply when paths are passed explicitly.
+#
+# Spelled out rather than `ec`: upstream's release tarballs ship the
+# short name, but the Homebrew formula installs only the long one, and
+# the Brewfile is how both CI and a dev machine get this tool.
+lint-editorconfig *args:
+    editorconfig-checker {{ args }}
 
 # Preview the four commit-msg gates against the COMMIT_AGENTMSG draft.
 # prek needs .pre-commit-config.yaml staged to run.

@@ -84,6 +84,16 @@ repos:
         files: ^Justfile$
         pass_filenames: false
 
+      # Tree-wide .editorconfig conformance. Scope lives in
+      # .editorconfig-checker.json rather than here, so the recipe and
+      # the hook check exactly the same file set.
+      - id: editorconfig-checker
+        name: editorconfig-checker
+        entry: just lint-editorconfig
+        language: system
+        types: [text]
+        pass_filenames: false
+
       # Tree-wide spell check at pre-commit and pre-push.
       - id: cspell
         name: cspell
