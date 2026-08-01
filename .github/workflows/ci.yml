@@ -47,6 +47,14 @@ jobs:
       - name: Put Homebrew on the PATH
         run: echo "/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin" >> "$GITHUB_PATH"
 
+      # vale comes from the pinned composite rather than the Brewfile:
+      # the prose gates are strict enough that an upstream release can
+      # move findings without a change here, so the binary is pinned and
+      # Renovate-tracked like every other tool. It goes on PATH ahead of
+      # Homebrew's prefix, so the Brewfile copy never shadows it.
+      - name: Set up vale
+        uses: ./.github/actions/setup-vale
+
       # The image pins an older Homebrew and sets HOMEBREW_NO_AUTO_UPDATE,
       # but `brew bundle` reads formula metadata from the JSON API, which
       # serves current definitions. ca-certificates now declares a `run`
