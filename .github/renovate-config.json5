@@ -48,6 +48,22 @@
     minimumReleaseAge: null,
   },
 
+  // Refresh the whole locked closure on a schedule. The built-in managers
+  // only track what a manifest declares, so a package that arrives purely
+  // as a transitive pin never moves on its own: both Python repos sat on
+  // GitPython 3.1.50 through eight injection advisories because nothing
+  // declared it and cosmic-ray constrains it to nothing.
+  //
+  // The `minimumReleaseAge` cooldown in packageRules below cannot reach
+  // inside this: a re-lock is one wholesale resolution, not a set of
+  // per-package updates Renovate can age out individually. Monthly rather
+  // than weekly keeps that exposure small, and the audit and
+  // osv-scanner gates run on the PR it opens.
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ["before 4am on the first day of the month"],
+  },
+
   packageRules: [
     // Cooldown window — skip versions younger than 5 days. Most
     // supply-chain attacks get noticed and yanked inside that window.
