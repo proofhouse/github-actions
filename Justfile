@@ -1,5 +1,5 @@
-set unstable := true
-set positional-arguments := true
+set unstable
+set positional-arguments
 
 # Run [script] recipes under bash; dash lacks [[ ]], <<<, and pipefail.
 
@@ -109,6 +109,14 @@ format-config *args:
 format-toml:
     tombi format
 
+# Format this Justfile in place. `--unstable` is passed explicitly
+# rather than leaned on from `set unstable` above: just still labels
+# `--fmt` unstable in its help, and older releases refused to run it
+# without the flag. Current just accepts it as a no-op, so keeping it
+# costs nothing and keeps the recipe working across pinned versions.
+format-just:
+    just --fmt --unstable
+
 # --- Fix ---
 
 # Apply rumdl's auto-fixable Markdown rules.
@@ -118,7 +126,7 @@ fix-markdown *args:
 # --- Lint ---
 
 # Run every linter over the source tree.
-lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml lint-toml
+lint: lint-workflows lint-prose lint-spelling lint-markdown lint-config lint-yaml lint-toml lint-just
 
 # Lint GitHub Actions workflows via actionlint (SHA-pinned Docker image).
 lint-workflows:
@@ -176,6 +184,12 @@ check-tombi-version:
     else
         echo "tombi ${local} matches the verified release"
     fi
+
+# Check this Justfile against just's own formatter. Non-mutating: it
+# exits non-zero and prints a diff rather than rewriting. `just
+# format-just` is the in-place fixer.
+lint-just:
+    just --fmt --check --unstable
 
 # Preview the four commit-msg gates against the COMMIT_AGENTMSG draft.
 # prek needs .pre-commit-config.yaml staged to run.
