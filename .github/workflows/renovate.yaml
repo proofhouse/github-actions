@@ -68,7 +68,7 @@ jobs:
       # action needs the config file on the runner filesystem to bind
       # into the container.
       - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -82,7 +82,7 @@ jobs:
       # limit. The action forwards GITHUB_COM_TOKEN by default (it is in
       # its env-regex allowlist alongside LOG_LEVEL).
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@dd5302ec17783b2fc721b19ae7209b57b1587765 # v46.1.17
+        uses: renovatebot/github-action@3064367f740a1a91cca218698a63902689cce200 # v46.1.20
         env:
           LOG_LEVEL: ${{ (github.event_name == 'schedule' || inputs.renovate_log_level_debug) && 'DEBUG' || 'INFO' }}
           GITHUB_COM_TOKEN: ${{ steps.get_token.outputs.token }}
