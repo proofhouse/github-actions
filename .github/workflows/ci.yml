@@ -85,3 +85,5 @@ jobs:
           just lint-config
           just lint-yaml
           just lint-toml
+          just lint-just
+          just lint-editorconfig

@@ -72,6 +72,28 @@ repos:
         types: [text]
         files: "\\.(jsx?|tsx?|c(js|ts)|m(js|ts)|d\\.(ts|cts|mts)|jsonc?|json5|css|svelte|vue|astro|graphql|gql)$"
 
+      # Fails when the formatter would rewrite the Justfile. Checks
+      # rather than formats, so a reformat never lands without review in
+      # the middle of an unrelated commit; `just format-just` applies it.
+      # The recipe already targets the one file, so pass_filenames stays
+      # off and `files` only decides whether the hook runs at all.
+      - id: just-fmt
+        name: just --fmt --check
+        entry: just lint-just
+        language: system
+        files: ^Justfile$
+        pass_filenames: false
+
+      # Tree-wide .editorconfig conformance. Scope lives in
+      # .editorconfig-checker.json rather than here, so the recipe and
+      # the hook check exactly the same file set.
+      - id: editorconfig-checker
+        name: editorconfig-checker
+        entry: just lint-editorconfig
+        language: system
+        types: [text]
+        pass_filenames: false
+
       # Tree-wide spell check at pre-commit and pre-push.
       - id: cspell
         name: cspell
