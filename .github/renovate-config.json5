@@ -48,6 +48,33 @@
     minimumReleaseAge: null,
   },
 
+  // Refresh the whole locked closure, but only when a human asks for it.
+  //
+  // The built-in managers only track what a manifest declares, so a
+  // package that arrives purely as a transitive pin never moves on its
+  // own: both Python repos sat on GitPython 3.1.50 through eight
+  // injection advisories because nothing declared it and cosmic-ray
+  // constrains it to nothing.
+  //
+  // The `minimumReleaseAge` cooldown below cannot reach inside a re-lock.
+  // That cooldown is enforced during the per-package version lookup, and
+  // a lock refresh never enters that path — it re-runs the package
+  // manager and takes whatever resolves. Setting `minimumReleaseAge` here
+  // would read as protection while doing nothing.
+  //
+  // So the gate is approval rather than age: Renovate parks a checkbox on
+  // the Dependency Dashboard and opens nothing until someone ticks it.
+  // No release skips the waiting period without a deliberate act, the
+  // cooldown keeps governing every automatic update, and the capability
+  // is there when a transitive pin needs to move.
+  lockFileMaintenance: {
+    enabled: true,
+    dependencyDashboardApproval: true,
+    // Approval is the gate, so no schedule gate on top of it: once
+    // someone ticks the box the PR should appear, not wait for a window.
+    schedule: ["at any time"],
+  },
+
   packageRules: [
     // Cooldown window — skip versions younger than 5 days. Most
     // supply-chain attacks get noticed and yanked inside that window.
