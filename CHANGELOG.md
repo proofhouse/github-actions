@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased ([e95a868..b407ccb](https://github.com/proofhouse/github-actions/compare/e95a868..b407ccb))
+
+### Continuous Integration
+
+- (**renovate**) check that preset references resolve (#39) - ([ef3ecc2](https://github.com/proofhouse/github-actions/commit/ef3ecc265ff637d2df3968a200e578070e06617c)) - [@tbhb](https://github.com/tbhb)
+- (**renovate**) add a shared Go preset and gate it in CI (#35) - ([34ef434](https://github.com/proofhouse/github-actions/commit/34ef434049062eb766b4f1b9d41ad9a76c3415f2)) - [@tbhb](https://github.com/tbhb)
+- (**tombi**) add the org config lint and format gate (#38) - ([b407ccb](https://github.com/proofhouse/github-actions/commit/b407ccbc2e1bec21bf9d9c03149f88e9f60d9c12)) - [@tbhb](https://github.com/tbhb)
+
+- - -
+
 ## [v0.3.0](https://github.com/proofhouse/github-actions/compare/v0.2.2..v0.3.0) - 2026-08-01
 
 ### Continuous Integration
