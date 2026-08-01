@@ -76,3 +76,4 @@ jobs:
           just lint-markdown
           just lint-config
           just lint-yaml
+          just lint-toml

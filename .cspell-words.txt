@@ -299,3 +299,7 @@ popd
 sumfile
 linuxbrew
 tmpl
+lockfiles
+pyproject
+tombi
+venv
