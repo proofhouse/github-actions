@@ -1,19 +1,16 @@
 # Changelog
 
-## [v0.2.0](https://github.com/proofhouse/github-actions/compare/v0.1.0..v0.2.0) - 2026-05-31
+## [v0.3.0](https://github.com/proofhouse/github-actions/compare/v0.2.2..v0.3.0) - 2026-08-01
 
-### Features
+### Continuous Integration
 
-- (**workflows**) make CODEOWNERS and Renovate workflows reusable - ([8dcb940](https://github.com/proofhouse/github-actions/commit/8dcb940147ca7c7cbd842e5c0f766a206e9f732f)) - [@tbhb](https://github.com/tbhb)
-
-#### Continuous Integration
-
-- bump rumdl-pre-commit to v0.2.4 - ([f2dac68](https://github.com/proofhouse/github-actions/commit/f2dac68aa60dff300454682deca8f49a684099e8)) - [@tbhb](https://github.com/tbhb)
-- scope Changelog rule exclusions to rumdl per-path config - ([5052217](https://github.com/proofhouse/github-actions/commit/5052217031d0a933d0ed241ca0300bfef63b5780)) - [@tbhb](https://github.com/tbhb)
+- (**brew**) update Homebrew before installing dependencies (#33) - ([39f507a](https://github.com/proofhouse/github-actions/commit/39f507a587ad2d8cfafd03a307437dc0bffa2833)) - [@tbhb](https://github.com/tbhb)
+- (**vale**) pin the vale binary through a setup-vale composite (#36) - ([60ea3c5](https://github.com/proofhouse/github-actions/commit/60ea3c57e2e2b8ad8f185d5ae792c0da5caf0de7)) - [@tbhb](https://github.com/tbhb)
+- (**vale**) follow the vale CLI repo move to vale-cli/vale (#27) - ([c132edd](https://github.com/proofhouse/github-actions/commit/c132edd4becaa7553e0cfe8e0f0cbdcc60b5fa56)) - [@tbhb](https://github.com/tbhb)
 
 - - -
 
-## [v0.2.2](https://github.com/proofhouse/github-actions/compare/b791f01710e652029365fa5c8ac3dacb518b3ca7..v0.2.2) - 2026-07-09
+## [v0.2.2](https://github.com/proofhouse/github-actions/compare/v0.2.1..v0.2.2) - 2026-07-09
 
 ### Continuous Integration
 
@@ -22,7 +19,7 @@
 
 - - -
 
-## [v0.2.1](https://github.com/proofhouse/github-actions/compare/a5ae7edc3fe86aa60b77268433aec7fdfa8facfb..v0.2.1) - 2026-06-13
+## [v0.2.1](https://github.com/proofhouse/github-actions/compare/v0.2.0..v0.2.1) - 2026-06-13
 
 ### Bug Fixes
 
@@ -44,6 +41,19 @@
 #### Style
 
 - rephrase the figurative verb in the worktree rules - ([45b0f8d](https://github.com/proofhouse/github-actions/commit/45b0f8de011f5d99161f0e890dceea07d746c2a0)) - [@tbhb](https://github.com/tbhb)
+
+- - -
+
+## [v0.2.0](https://github.com/proofhouse/github-actions/compare/v0.1.0..v0.2.0) - 2026-05-31
+
+### Features
+
+- (**workflows**) make CODEOWNERS and Renovate workflows reusable - ([8dcb940](https://github.com/proofhouse/github-actions/commit/8dcb940147ca7c7cbd842e5c0f766a206e9f732f)) - [@tbhb](https://github.com/tbhb)
+
+#### Continuous Integration
+
+- bump rumdl-pre-commit to v0.2.4 - ([f2dac68](https://github.com/proofhouse/github-actions/commit/f2dac68aa60dff300454682deca8f49a684099e8)) - [@tbhb](https://github.com/tbhb)
+- scope Changelog rule exclusions to rumdl per-path config - ([5052217](https://github.com/proofhouse/github-actions/commit/5052217031d0a933d0ed241ca0300bfef63b5780)) - [@tbhb](https://github.com/tbhb)
 
 - - -
 
