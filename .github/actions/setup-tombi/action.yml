@@ -31,7 +31,7 @@ inputs:
   tombi-version:
     description: tombi version to install (defaults to the project-wide pinned release).
     required: false
-    default: '1.2.5'  # renovate: datasource=github-releases depName=tombi-toml/tombi
+    default: '1.5.0'  # renovate: datasource=github-releases depName=tombi-toml/tombi
 
 runs:
   using: composite
