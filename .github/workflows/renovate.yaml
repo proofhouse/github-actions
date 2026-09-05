@@ -82,7 +82,7 @@ jobs:
       # limit. The action forwards GITHUB_COM_TOKEN by default (it is in
       # its env-regex allowlist alongside LOG_LEVEL).
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@3064367f740a1a91cca218698a63902689cce200 # v46.1.20
+        uses: renovatebot/github-action@39b914146caeff8cd512e61c8992f1d5913af85c # v46.2.5
         env:
           LOG_LEVEL: ${{ (github.event_name == 'schedule' || inputs.renovate_log_level_debug) && 'DEBUG' || 'INFO' }}
           GITHUB_COM_TOKEN: ${{ steps.get_token.outputs.token }}
