@@ -88,6 +88,6 @@ jobs:
           GITHUB_COM_TOKEN: ${{ steps.get_token.outputs.token }}
         with:
           # renovate: datasource=github-releases depName=renovatebot/renovate
-          renovate-version: 43.281.1
+          renovate-version: 44.56.3
           configurationFile: .github/renovate.json5
           token: ${{ steps.get_token.outputs.token }}
